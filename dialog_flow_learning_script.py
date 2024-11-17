@@ -1,11 +1,10 @@
 import json
 
 from environs import Env
+from google.cloud import dialogflow
 
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
-    from google.cloud import dialogflow
-
     intents_client = dialogflow.IntentsClient()
 
     parent = dialogflow.AgentsClient.agent_path(project_id)
@@ -29,16 +28,17 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
     print("Intent created: {}".format(response))
 
 
-env = Env()
-env.read_env()
-dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
+if __name__ == "__main__":
+    env = Env()
+    env.read_env()
+    dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
 
-with open("trenings_fraze.json", "r", encoding="utf-8") as file:
-    file_contents = json.load(file)
-    for display_name, questions_and_answer in file_contents.items():
-        create_intent(
-            dialog_flow_project_id,
-            display_name,
-            questions_and_answer["questions"],
-            [questions_and_answer["answer"]],
-        )
+    with open("trenings_fraze.json", "r", encoding="utf-8") as file:
+        file_contents = json.load(file)
+        for display_name, questions_and_answer in file_contents.items():
+            create_intent(
+                dialog_flow_project_id,
+                display_name,
+                questions_and_answer["questions"],
+                [questions_and_answer["answer"]],
+            )

@@ -1,8 +1,6 @@
-import logging
-
 from environs import Env
 from google.cloud import dialogflow
-from telegram import Update
+from telegram import Bot, Update
 from telegram.ext import (
     CallbackContext,
     CommandHandler,
@@ -11,10 +9,7 @@ from telegram.ext import (
     Updater,
 )
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+from logging_config import start_logger
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -50,7 +45,11 @@ if __name__ == "__main__":
     env.read_env()
     telegram_bot_token = env.str("TELEGRAM_BOT_TOKEN")
     dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
+    tg_chat_id = env.str("TG_CHAT_ID")
+    bot = Bot(telegram_bot_token)
+    logger = start_logger(bot, tg_chat_id)
 
+    logger.info("Бот запущен")
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
