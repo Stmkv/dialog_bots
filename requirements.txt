@@ -3,3 +3,4 @@ urllib3==1.26.15
 environs==11.2.0
 google-cloud-dialogflow
 google-cloud-api-keys
+vk_api==11.9.9
