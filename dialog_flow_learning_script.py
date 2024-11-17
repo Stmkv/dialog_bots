@@ -25,20 +25,27 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
         request={"parent": parent, "intent": intent}
     )
 
-    print("Intent created: {}".format(response))
+    print(f"Intent created: {response}")
+
+
+def load_training_data(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            file_contents = json.load(file)
+        return file_contents
+    except Exception as e:
+        print(f"File read {file_path} error: {e}")
 
 
 if __name__ == "__main__":
     env = Env()
     env.read_env()
     dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
-
-    with open("trenings_fraze.json", "r", encoding="utf-8") as file:
-        file_contents = json.load(file)
-        for display_name, questions_and_answer in file_contents.items():
-            create_intent(
-                dialog_flow_project_id,
-                display_name,
-                questions_and_answer["questions"],
-                [questions_and_answer["answer"]],
-            )
+    file_contents = load_training_data("trenings_fraze.json")
+    for display_name, questions_and_answer in file_contents.items():
+        create_intent(
+            dialog_flow_project_id,
+            display_name,
+            questions_and_answer["questions"],
+            [questions_and_answer["answer"]],
+        )
