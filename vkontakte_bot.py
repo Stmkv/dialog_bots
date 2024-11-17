@@ -12,6 +12,8 @@ def message(event, vk_api):
     reply_user = get_message_dealog_flow(
         dialog_flow_project_id, user_id, [message], "ru-RU"
     )
+    if not reply_user:
+        return
     vk_api.messages.send(
         user_id=event.user_id, message=reply_user, random_id=random.randint(1, 1000)
     )
@@ -28,6 +30,9 @@ def get_message_dealog_flow(project_id, session_id, messages, language_code):
         response = session_client.detect_intent(
             request={"session": session, "query_input": query_input}
         )
+
+        if response.query_result.intent.is_fallback:
+            return
         return response.query_result.fulfillment_text
 
 
