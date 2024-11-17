@@ -15,11 +15,11 @@ def create_api_key(project_id: str) -> Key:
 
     response = client.create_key(request=request).result()
 
-    print(f"Successfully created an API key: {response.name}")
     return response
 
 
-env = Env()
-env.read_env()
-dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
-print(create_api_key(dialog_flow_project_id))
+if __name__ == "__main__":
+    env = Env()
+    env.read_env()
+    dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
+    print("Successfully created an API key", create_api_key(dialog_flow_project_id))

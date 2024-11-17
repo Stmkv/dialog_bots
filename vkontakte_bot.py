@@ -11,7 +11,7 @@ from logging_config import start_logger
 
 def message(event, vk_api):
     message = event.message
-    user_id = event.user_id
+    user_id = f"vk-{event.user_id}"
     reply_user = get_message_dealog_flow(
         dialog_flow_project_id, user_id, [message], "ru-RU"
     )
@@ -23,25 +23,20 @@ def message(event, vk_api):
 
 
 def get_message_dealog_flow(project_id, session_id, messages, language_code):
-    try:
-        session_client = dialogflow.SessionsClient()
-        session = session_client.session_path(project_id, session_id)
+    session_client = dialogflow.SessionsClient()
+    session = session_client.session_path(project_id, session_id)
 
-        for message in messages:
-            user_message = dialogflow.TextInput(
-                text=message, language_code=language_code
-            )
-            query_input = dialogflow.QueryInput(text=user_message)
+    for message in messages:
+        user_message = dialogflow.TextInput(text=message, language_code=language_code)
+        query_input = dialogflow.QueryInput(text=user_message)
 
-            response = session_client.detect_intent(
-                request={"session": session, "query_input": query_input}
-            )
+        response = session_client.detect_intent(
+            request={"session": session, "query_input": query_input}
+        )
 
-            if response.query_result.intent.is_fallback:
-                return
-            return response.query_result.fulfillment_text
-    except Exception as e:
-        logger.warning(f"Произошла ошибка при получении сообщения от DialogFlow:{e}")
+        if response.query_result.intent.is_fallback:
+            return
+        return response.query_result.fulfillment_text
 
 
 if __name__ == "__main__":

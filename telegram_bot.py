@@ -17,7 +17,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def message(update: Update, context: CallbackContext) -> None:
-    user_id = update.message.from_user.id
+    user_id = f"tg-{update.message.from_user.id}"
     user_message = update.message.text
     user_answer = get_message_dealog_flow(
         dialog_flow_project_id, user_id, [user_message], "ru-RU"
@@ -50,12 +50,10 @@ if __name__ == "__main__":
 
     logger = start_logger(bot, tg_chat_id)
     logger.info("Бот запущен")
-    try:
-        updater = Updater(telegram_bot_token)
-        dispatcher = updater.dispatcher
-        dispatcher.add_handler(CommandHandler("start", start))
-        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, message))
-        updater.start_polling()
-        updater.idle()
-    except Exception as e:
-        logger.error(f"Произошла ошитбка при работе TG бота: {e}")
+
+    updater = Updater(telegram_bot_token)
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, message))
+    updater.start_polling()
+    updater.idle()
