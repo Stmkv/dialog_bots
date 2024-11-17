@@ -1,5 +1,15 @@
 # Телеграм & ВКонтакте бот
 
+Пример работы Telegram бота:
+
+
+https://github.com/user-attachments/assets/b07f5ee4-4ab2-4474-9533-44a409fdae39
+
+Пример работы Vkontakte бота:
+
+https://github.com/user-attachments/assets/5f6969bb-5aa2-41cb-938c-2cad88ab68ad
+
+
 Репозиторий представляет собой двух ботов, которых можно обучить отвечать на определенные фразы, боты работают с помощью сервиса [DialogFlow](https://dialogflow.cloud.google.com/)
 
 Чтобы запустить ботов вам нужно будет:
