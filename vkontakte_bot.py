@@ -3,7 +3,10 @@ import random
 import vk_api
 from environs import Env
 from google.cloud import dialogflow
+from telegram import Bot
 from vk_api.longpoll import VkEventType, VkLongPoll
+
+from logging_config import start_logger
 
 
 def message(event, vk_api):
@@ -20,20 +23,25 @@ def message(event, vk_api):
 
 
 def get_message_dealog_flow(project_id, session_id, messages, language_code):
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, session_id)
+    try:
+        session_client = dialogflow.SessionsClient()
+        session = session_client.session_path(project_id, session_id)
 
-    for message in messages:
-        user_message = dialogflow.TextInput(text=message, language_code=language_code)
-        query_input = dialogflow.QueryInput(text=user_message)
+        for message in messages:
+            user_message = dialogflow.TextInput(
+                text=message, language_code=language_code
+            )
+            query_input = dialogflow.QueryInput(text=user_message)
 
-        response = session_client.detect_intent(
-            request={"session": session, "query_input": query_input}
-        )
+            response = session_client.detect_intent(
+                request={"session": session, "query_input": query_input}
+            )
 
-        if response.query_result.intent.is_fallback:
-            return
-        return response.query_result.fulfillment_text
+            if response.query_result.intent.is_fallback:
+                return
+            return response.query_result.fulfillment_text
+    except Exception as e:
+        logger.warning(f"Произошла ошибка при получении сообщения от DialogFlow:{e}")
 
 
 if __name__ == "__main__":
@@ -42,9 +50,17 @@ if __name__ == "__main__":
     vk_token_group = env.str("VK_BOT_TOKEN")
     dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
 
-    vk_session = vk_api.VkApi(token=vk_token_group)
-    vk_api = vk_session.get_api()
-    longpoll = VkLongPoll(vk_session)
-    for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            message(event, vk_api)
+    telegram_bot_token = env.str("TELEGRAM_BOT_TOKEN")
+    bot = Bot(telegram_bot_token)
+    tg_chat_id = env.str("TG_CHAT_ID")
+    logger = start_logger(bot, tg_chat_id)
+    logger.info("Бот запущен")
+    try:
+        vk_session = vk_api.VkApi(token=vk_token_group)
+        vk_api = vk_session.get_api()
+        longpoll = VkLongPoll(vk_session)
+        for event in longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                message(event, vk_api)
+    except Exception as e:
+        logger.error(f"Произошла ошибка при работе Vk бота: {e}")
