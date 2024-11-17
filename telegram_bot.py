@@ -47,13 +47,15 @@ if __name__ == "__main__":
     dialog_flow_project_id = env.str("DIALOG_FLOW_PROJECT_ID")
     tg_chat_id = env.str("TG_CHAT_ID")
     bot = Bot(telegram_bot_token)
+
     logger = start_logger(bot, tg_chat_id)
-
     logger.info("Бот запущен")
-    updater = Updater(telegram_bot_token)
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, message))
-
-    updater.start_polling()
-    updater.idle()
+    try:
+        updater = Updater(telegram_bot_token)
+        dispatcher = updater.dispatcher
+        dispatcher.add_handler(CommandHandler("start", start))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, message))
+        updater.start_polling()
+        updater.idle()
+    except Exception as e:
+        logger.error(f"Произошла ошитбка при работе TG бота: {e}")
