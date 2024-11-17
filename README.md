@@ -11,8 +11,6 @@ ID проекта GoogleCloud совпадают с ProjectID на DialogFlolw.
 
 Получить токен бота VK и Telegram.
 
-`<hr>`
-
 ## Запуск
 
 У вас уже должен быть установлен python3.
